@@ -8,6 +8,7 @@ import { DISHES } from '../shared/dishes';
 import { COMMENTS } from '../shared/comments';
 import { PROMOTIONS } from '../shared/promotions';
 import { LEADERS } from '../shared/leaders';
+import Test from './testComponent';
 import Header from './HeaderComponent';
 import Footer from './FooterComponent';
 import {Switch, Route, Redirect} from 'react-router-dom';
@@ -25,8 +26,8 @@ class Main extends Component {
     }
   }
 
-  render() {
 
+  render() {
     const HomePage = () => {
       return(
         <Home dish = {this.state.dishes.filter((dish)=> dish.featured )[0]}
