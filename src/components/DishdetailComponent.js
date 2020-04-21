@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Card, CardBody, CardImg, CardImgOverlay, CardText, CardTitle, Breadcrumb, BreadcrumbItem, Button, ModalBody, Modal, ModalHeader, Label, Row, Col } from 'reactstrap';
 import { Link } from 'react-router-dom'
 import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Loading } from './LoadingComponent';
 
 //Task 3 constants
 const required = (val) => val && val.length; 
@@ -33,7 +34,7 @@ function RenderDish({dish}){
     }
 
 
-function RenderComments({comments}){
+function RenderComments({comments, dishId, addComments}){
        if(comments != null){
             const comm = comments.map(commEle => {
                 return (
@@ -51,7 +52,7 @@ function RenderComments({comments}){
                     <ul className="list-unstyled">
                         {comm}
                     </ul>
-                    <CommentForm />
+                    <CommentForm dishId = {dishId} addComments={addComments}/>
                 </div>
             );
         }
@@ -63,7 +64,25 @@ function RenderComments({comments}){
 
 
 const DishDetail = (props) => {
-
+    if (props.isLoading) {
+        return (
+            <div className="container">
+                <div className="row">
+                    <Loading />
+                </div>
+            </div>
+        );
+    }
+    else if (props.errMessage) {
+        return(
+            <div className="container">
+                <div className="row">            
+                    <h4>{props.errMess}</h4>
+                </div>
+            </div>
+        );
+    }
+    else if (props.dish != null)
       return(
         <div className="container">
            <div className="row">
@@ -81,12 +100,15 @@ const DishDetail = (props) => {
                         <RenderDish dish={props.dish} />
                     </div>
                     <div className="col-12 col-md-5 m-1">
-                        <RenderComments comments={props.comments} />
+                        <RenderComments comments={props.comments} addComments = {props.addComment} dishId={props.dish.id}/>
                     </div>
             </div>
         </div>
-        
       );
+      else 
+        return (
+            <div></div>
+        );
   }
 
 
@@ -109,7 +131,8 @@ class CommentForm extends Component {
     }
 
     handleSubmit(values){
-        alert("The current state is: "+JSON.stringify(values));
+        this.toggleModel();
+        this.props.addComments(this.props.dishId, values.rating, values.name, values.message);
     }
 
     render(){
