@@ -3,6 +3,8 @@ import { Card, CardBody, CardImg, CardImgOverlay, CardText, CardTitle, Breadcrum
 import { Link } from 'react-router-dom'
 import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Loading } from './LoadingComponent';
+import { baseUrl } from '../shared/baseUrl';
+import { FadeTransform, Fade, Stagger } from 'react-animation-components'; 
 
 //Task 3 constants
 const required = (val) => val && val.length; 
@@ -13,9 +15,13 @@ function RenderDish({dish}){
 
         if(dish != null){
             return(
-                
+                <FadeTransform
+                in
+                transformProps={{
+                    exitTransform: 'scale(0.5) translateY(-50%)'
+                }}>
                     <Card>
-                        <CardImg width="100%" src={dish.image} alt={dish.name} />
+                        <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name} />
                         <CardImgOverlay>
                                 <CardTitle>{dish.name}</CardTitle>
                         </CardImgOverlay>
@@ -24,6 +30,7 @@ function RenderDish({dish}){
                             <CardText>{ dish.description} </CardText>
                         </CardBody>
                     </Card>
+                </FadeTransform>
             );
           }else {
               return(
@@ -34,25 +41,29 @@ function RenderDish({dish}){
     }
 
 
-function RenderComments({comments, dishId, addComments}){
+function RenderComments({comments, dishId, postComments}){
        if(comments != null){
-            const comm = comments.map(commEle => {
-                return (
-                    <div>
-                        <li key = {commEle.id}>
-                            <p>{commEle.comment}</p>
-                            <p>-- {commEle.author} , {new Intl.DateTimeFormat('en-US', {year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(commEle.date)))} </p>
-                        </li>
-                    </div>
-                );
-            });
             return(
                 <div>
                     <h4>Comments</h4>
                     <ul className="list-unstyled">
-                        {comm}
+                    <Stagger in>
+                         {comments.map(commEle => {
+                                return (
+                                        <Fade in>
+                                            <div>
+                                            <li key = {commEle.id}>
+                                                <p>{commEle.comment}</p>
+                                                <p>-- {commEle.author} , {new Intl.DateTimeFormat('en-US', {year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(commEle.date)))} </p>
+                                            </li>
+                                            </div>
+                                        </Fade>
+                                ); 
+                            })
+                        }
+                        </Stagger>
                     </ul>
-                    <CommentForm dishId = {dishId} addComments={addComments}/>
+                    <CommentForm dishId = {dishId} postComments={postComments}/>
                 </div>
             );
         }
@@ -100,7 +111,7 @@ const DishDetail = (props) => {
                         <RenderDish dish={props.dish} />
                     </div>
                     <div className="col-12 col-md-5 m-1">
-                        <RenderComments comments={props.comments} addComments = {props.addComment} dishId={props.dish.id}/>
+                        <RenderComments comments={props.comments} postComments = {props.postComment} dishId={props.dish.id}/>
                     </div>
             </div>
         </div>
@@ -132,7 +143,7 @@ class CommentForm extends Component {
 
     handleSubmit(values){
         this.toggleModel();
-        this.props.addComments(this.props.dishId, values.rating, values.name, values.message);
+        this.props.postComments(this.props.dishId, values.rating, values.name, values.message);
     }
 
     render(){
