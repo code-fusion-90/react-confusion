@@ -1,4 +1,4 @@
-#React Confusion CS Project
+# React Confusion CS Project
 This is a coursesera project with completed assignments.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
